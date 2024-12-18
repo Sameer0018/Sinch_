@@ -29,6 +29,11 @@ app.use('/api/auth', authRoutes);
 app.use('/api/profile', profileRoutes); 
 app.use('/api/plan', planRoutes);
  
+
+app.get('/testingsinch', (req, res) => {
+  res.send('Hello Sameer SDE-1');
+});
+
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);
 });
