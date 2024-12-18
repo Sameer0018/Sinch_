@@ -8,7 +8,7 @@ const cors = require('cors'); // Import cors
 dotenv.config();
 
 const app = express();
-const port = process.env.PORT || 8000;
+const port = process.env.PORT || 6969;
 // Enable CORS
 app.use(cors({
   origin: 'http://localhost:3000', // Allow requests from this origin
@@ -32,7 +32,9 @@ app.use('/api/plan', planRoutes);
 app.get('/', (req, res) => {
   res.send('Hello Sameer SDE-1');
 });
+
 app.listen(port, () => {
-  console.log(`Server running on port ${port}`);
+  console.log(`http://localhost:${port}`);
 });
 
+ 
