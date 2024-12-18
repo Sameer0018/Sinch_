@@ -24,7 +24,7 @@ router.get('/plans', (req, res) => {
   });
   
   
-router.post('/purchase',verifyToken, isUser, planController.purchasePlan);
+router.post('/purchase', planController.purchasePlan);
 
 // Route to get unallocated numbers with plan details
 router.get('/unallocated-numbers', (req, res) => {
@@ -37,15 +37,10 @@ router.get('/unallocated-numbers', (req, res) => {
     });
   });
 // Route to get number details with plan and user information
-router.get('/number-details', verifyToken, isUser, (req, res) => {
+router.get('/number-details',  (req, res) => {
     // Extract 'aucode' from the request headers
-    const auCode = req.headers.aucode;
-  
-    if (!auCode) {
-      return res.status(400).json({ error: 'aucode is required in headers' });
-    }
-  
-    planController.getNumberDetailsWithPlanAndUser(auCode, (err, result) => {
+    
+    planController.getNumberDetailsWithPlanAndUser( (err, result) => {
       if (err) {
         console.error('Error fetching number details with plan and user info:', err);
         return res.status(500).json({ error: 'Failed to fetch number details' });

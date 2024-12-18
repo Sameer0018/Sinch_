@@ -56,8 +56,7 @@ const getAllPlans = (callback) => {
       return callback(err, null);
     }
     
-    // Ensure the result is an array of plans and log it
-    console.log('Plans result:', result);
+    
 
     callback(null, result);
   });
@@ -69,58 +68,51 @@ const getAllPlans = (callback) => {
 const getUnallocatedNumbersWithPlanDetails = (callback) => {
   const query = `
     SELECT 
-      n.sinchnumberid, 
-      n.plan_id, 
-      n.sinch_number,
-      n.plan_name,
-      n.buying_price, 
-      n.selling_price, 
-      n.allocated,
-      p.plancode,
-      p.planname, 
-      p.description, 
-      p.price AS plan_price, 
-      p.call_limit
+      sinchnumberid, 
+      plan_id, 
+      sinch_number, 
+      plan_name, 
+      buying_price, 
+      selling_price, 
+      allocated
     FROM 
-      tbl_number_sinch n
-    LEFT JOIN 
-      tbl_plan_clay p ON n.sinchnumberid = p.plan_id
+      tbl_number_sinch
     WHERE 
-      n.allocated = 0
+      allocated = 0
   `;
   
   db.query(query, callback);
 };
 
-// Function to fetch number details with plan and user info
-const getNumberDetailsWithPlanAndUser = (auCode, callback) => {
+const getNumberDetailsWithPlanAndUser = (callback) => {
   const query = `
     SELECT 
       n.sinchnumberid, 
-      p.plancode,
-      p.planname, 
-      p.price, 
-      p.call_limit, 
-      u.name AS user_name
+      n.plan_id, 
+      n.sinch_number, 
+      n.plan_name, 
+      n.buying_price, 
+      n.aucode,
+      n.selling_price, 
+      n.allocated,
+      u.name AS user_name  -- Get the name from tbl_user
     FROM 
       tbl_number_sinch n
     LEFT JOIN 
-      tbl_plan_clay p ON n.plan_id = p.plan_id
-    LEFT JOIN 
-      users u ON n.user_id = u.id
+      tbl_users u ON n.aucode = u.aucode  -- Join on aucode
     WHERE 
-      u.aucode = ?  -- Use the auCode in the query to filter results
+      n.allocated = 1
   `;
-  
-  // Execute the query with the auCode parameter
-  db.query(query, [auCode], callback);
+
+  db.query(query, callback);
 };
 
-const purchasePlan = (req, res) => {
-  const { userId, plancode } = req.body;
 
-  if (!userId || !plancode) {
-    return res.status(400).json({ message: 'userId and planId are required.' });
+const purchasePlan = (req, res) => {
+  const { aucode, plancode } = req.body; // Use aucode instead of userId
+
+  if (!aucode || !plancode) {
+    return res.status(400).json({ message: 'aucode and plancode are required.' });
   }
 
   // Assuming sinchNumberId is part of the request or can be found via some logic
@@ -133,11 +125,11 @@ const purchasePlan = (req, res) => {
   // Query to update the sinch_number record in the database
   const query = `
     UPDATE tbl_number_sinch 
-    SET plancode = ?, user_id = ?, allocated = 1 
+    SET plancode = ?, aucode = ?, allocated = 1 
     WHERE sinchNumberId = ? AND (plancode IS NULL OR plancode = 0);
   `;
 
-  db.query(query, [plancode, userId, sinchNumberId], (err, results) => {
+  db.query(query, [plancode, aucode, sinchNumberId], (err, results) => {
     if (err) {
       console.error('Error updating sinch_number:', err);
       return res.status(500).json({ message: 'Error allocating phone number', error: err });
@@ -157,5 +149,6 @@ const purchasePlan = (req, res) => {
 
 
 
+
 module.exports = { createPlan, getPlans, purchasePlan,getUnallocatedNumbersWithPlanDetails,getNumberDetailsWithPlanAndUser,getAllPlans };
- 
+  
