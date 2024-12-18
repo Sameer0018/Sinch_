@@ -1,36 +1,38 @@
+// app.js
 const express = require('express');
 const dotenv = require('dotenv');
 const bodyParser = require('body-parser');
-const cors = require('cors');
+const cors = require('cors'); // Import cors
+
 
 dotenv.config();
 
 const app = express();
 const port = process.env.PORT || 8000;
-
 // Enable CORS
 app.use(cors({
-  origin: 'http://localhost:3000',
-  methods: ['GET', 'POST', 'PUT', 'DELETE'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
+  origin: 'http://localhost:3000', // Allow requests from this origin
+  methods: ['GET', 'POST', 'PUT', 'DELETE'], // Allowed HTTP methods
+  allowedHeaders: ['Content-Type', 'Authorization'], // Allowed headers
 }));
+
 
 app.use(bodyParser.json());
 
-// Remove or comment out the database connection logic temporarily to avoid the timeout error.
-try {
-  // Your DB connection logic here if needed later
-  // For example: connectToDatabase();
-  console.log("Database connection attempt skipped for now.");
-} catch (error) {
-  console.error("Error connecting to the database: ", error);
-}
+const authRoutes = require('./src/routes/authRoutes');
+const profileRoutes = require('./src/routes/profileRoutes');
+const planRoutes = require('./src/routes/planRoutes');
 
-// Define your routes
+app.use('/api', authRoutes);
+
+app.use('/api/auth', authRoutes);
+app.use('/api/profile', profileRoutes); 
+app.use('/api/plan', planRoutes);
+// New route for /testingsinch
 app.get('/', (req, res) => {
   res.send('Hello Sameer SDE-1');
 });
-
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);
 });
+
