@@ -4,7 +4,7 @@
   "desciption":"",
   "main": "app.js",
   "engines": {
-    "node":"18.x"
+    "node":"21.x"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
