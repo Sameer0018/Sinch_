@@ -27,7 +27,7 @@ try {
 }
 
 // Define your routes
-app.get('/testingsinch', (req, res) => {
+app.get('/', (req, res) => {
   res.send('Hello Sameer SDE-1');
 });
 
